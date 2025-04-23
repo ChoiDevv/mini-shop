@@ -1,12 +1,26 @@
 import { Module } from '@nestjs/common';
-import { UserModule } from './src/user/user.module';
-import { AdminModule } from './src/admin/admin.module';
-import { ProductModule } from './src/product/product.module';
-import { OrderModule } from './src/order/order.module';
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [UserModule, AdminModule, ProductModule, OrderModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ".env"
+    }),
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: process.env.DB_HOST,
+      port: Number(process.env.DB_PORT),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      entities: [__dirname + '/../**/*.entity.{ts,js}'],
+      synchronize: false,
+    }),],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }
+
+console.log(`connect ${process.env.DB_HOST}, DB_NAME: ${process.env.DB_NAME}`);
